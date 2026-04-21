@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { X } from 'lucide-react'
 
@@ -8,16 +8,29 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const { signIn, signUp, signInWithPhone, verifyOTP } = useAuth()
+  const { signIn, signUp, signInWithPhone, verifyOTP, resetPassword } = useAuth()
   const [mode, setMode] = useState<'email' | 'phone'>('email')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [otpSent, setOtpSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [isRegister, setIsRegister] = useState(false)
+  const [isForgotPassword, setIsForgotPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+
+  // 加载记住的邮箱
+  useEffect(() => {
+    const remembered = localStorage.getItem('mintqx_remembered_email')
+    if (remembered) {
+      setEmail(remembered)
+      setRememberMe(true)
+    }
+  }, [])
 
   if (!isOpen) return null
 
@@ -25,15 +38,43 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess('')
     
     try {
-      if (isRegister) {
+      if (isForgotPassword) {
+        // 忘记密码
+        const { error } = await resetPassword(email)
+        if (error) throw error
+        setSuccess('密码重置链接已发送到邮箱，请查收！')
+        setTimeout(() => setIsForgotPassword(false), 3000)
+      } else if (isRegister) {
+        // 注册
+        if (password !== confirmPassword) {
+          setError('两次密码不一致')
+          setLoading(false)
+          return
+        }
+        if (password.length < 6) {
+          setError('密码至少6位')
+          setLoading(false)
+          return
+        }
         const { error } = await signUp(email, password)
         if (error) throw error
-        setError('注册成功！请查收验证邮件。')
+        setSuccess('注册成功！请查收验证邮件后登录。')
+        setPassword('')
+        setConfirmPassword('')
+        setTimeout(() => setIsRegister(false), 3000)
       } else {
+        // 登录
         const { error } = await signIn(email, password)
         if (error) throw error
+        // 记住我
+        if (rememberMe) {
+          localStorage.setItem('mintqx_remembered_email', email)
+        } else {
+          localStorage.removeItem('mintqx_remembered_email')
+        }
         onClose()
       }
     } catch (err: any) {
@@ -110,6 +151,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {error}
             </div>
           )}
+          {success && (
+            <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded text-green-400 text-sm">
+              {success}
+            </div>
+          )}
           
           {mode === 'email' ? (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
@@ -123,30 +169,79 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   required
                 />
               </div>
-              <div>
-                <input
-                  type="password"
-                  placeholder="密码"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-400"
-                  required
-                />
-              </div>
+              {!isForgotPassword && (
+                <>
+                  <div>
+                    <input
+                      type="password"
+                      placeholder={isRegister ? '设置密码（至少6位）' : '密码'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-400"
+                      required
+                    />
+                  </div>
+                  {isRegister && (
+                    <div>
+                      <input
+                        type="password"
+                        placeholder="确认密码"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-400"
+                        required
+                      />
+                    </div>
+                  )}
+                </>
+              )}
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 bg-blue-600 text-white font-medium rounded hover:bg-blue-500 transition disabled:opacity-50"
               >
-                {loading ? '处理中...' : (isRegister ? '注册' : '登录')}
+                {loading ? '处理中...' : isForgotPassword ? '发送重置链接' : isRegister ? '注册' : '登录'}
               </button>
+              
+              {!isForgotPassword && !isRegister && (
+                <div className="flex items-center justify-between text-sm">
+                  <label className="flex items-center gap-2 text-gray-400 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="accent-blue-500"
+                    />
+                    记住我
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => { setIsForgotPassword(true); setSuccess(''); setError('') }}
+                    className="text-blue-400 hover:text-blue-300"
+                  >
+                    忘记密码？
+                  </button>
+                </div>
+              )}
+              
               <div className="text-center">
                 <button
                   type="button"
-                  onClick={() => setIsRegister(!isRegister)}
+                  onClick={() => { 
+                    setIsRegister(!isRegister)
+                    setIsForgotPassword(false)
+                    setSuccess('')
+                    setError('')
+                  }}
                   className="text-gray-400 text-sm hover:text-blue-400"
                 >
-                  {isRegister ? '已有账号？登录' : '没有账号？注册'}
+                  {isForgotPassword ? (
+                    <>返回登录</>
+                  ) : isRegister ? (
+                    '已有账号？登录'
+                  ) : (
+                    '没有账号？注册'
+                  )}
                 </button>
               </div>
             </form>
