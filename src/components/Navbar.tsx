@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, TrendingUp } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
-const Navbar = () => {
+interface NavbarProps {
+  onLoginClick?: () => void
+}
+
+const Navbar = ({ onLoginClick }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,8 +71,24 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            <button className="btn-secondary text-sm">登录</button>
-            <button className="btn-primary text-sm">开始交易</button>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-[#d4af37] text-sm">
+                  {user.email?.split('@')[0] || user.phone?.slice(-4) || 'User'}
+                </span>
+                <button
+                  onClick={() => signOut()}
+                  className="btn-secondary text-sm"
+                >
+                  退出
+                </button>
+              </div>
+            ) : (
+              <>
+                <button onClick={onLoginClick} className="btn-secondary text-sm">登录</button>
+                <button className="btn-primary text-sm">开始交易</button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -95,8 +117,19 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="pt-4 space-y-3">
-                <button className="w-full btn-secondary text-sm">登录</button>
-                <button className="w-full btn-primary text-sm">开始交易</button>
+                {user ? (
+                  <>
+                    <div className="text-[#d4af37] text-sm py-2">
+                      {user.email?.split('@')[0] || user.phone?.slice(-4) || 'User'}
+                    </div>
+                    <button onClick={() => signOut()} className="w-full btn-secondary text-sm">退出</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={onLoginClick} className="w-full btn-secondary text-sm">登录</button>
+                    <button className="w-full btn-primary text-sm">开始交易</button>
+                  </>
+                )}
               </div>
             </div>
           </div>
