@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { TrendingUp, Mail, Phone, MapPin } from 'lucide-react';
+import { TrendingUp, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -30,6 +30,24 @@ const Footer = () => {
       { label: '合规声明', path: '#' },
     ],
   };
+
+  // Cross-site ecosystem partners
+  const ecosystemLinks = [
+    {
+      name: 'Dark Matter Bank',
+      url: 'https://www.darkmatterbank.com',
+      desc: 'DeFi 数字银行',
+      badge: 'DARK',
+      color: '#a78bfa',
+    },
+    {
+      name: 'USDD Stablecoin',
+      url: 'https://www.usddstablecoin.com',
+      desc: '稳定币发行平台',
+      badge: 'USDD',
+      color: '#d4af37',
+    },
+  ];
 
   return (
     <footer className="bg-[#0a0a0a] border-t border-[#d4af37]/20">
@@ -131,8 +149,34 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Ecosystem Partners */}
+        <div className="mt-12 pt-8 border-t border-[#d4af37]/20">
+          <p className="text-gray-500 text-xs uppercase tracking-widest mb-4 font-medium">生态合作伙伴</p>
+          <div className="flex flex-wrap gap-3">
+            {ecosystemLinks.map((eco) => (
+              <a
+                key={eco.name}
+                href={eco.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#d4af37]/40 rounded-lg px-3 py-2 transition-all group"
+              >
+                <span
+                  className="text-xs font-bold px-1.5 py-0.5 rounded"
+                  style={{ color: eco.color, backgroundColor: `${eco.color}18`, border: `1px solid ${eco.color}44` }}
+                >
+                  {eco.badge}
+                </span>
+                <span className="text-gray-300 text-sm group-hover:text-white transition-colors">{eco.name}</span>
+                <span className="text-gray-500 text-xs hidden sm:inline">{eco.desc}</span>
+                <ExternalLink className="w-3 h-3 text-gray-500 group-hover:text-[#d4af37] transition-colors" />
+              </a>
+            ))}
+          </div>
+        </div>
+
         {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+        <div className="mt-8 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           <p className="text-gray-500 text-sm">
             &copy; {currentYear} MINTQX. All rights reserved.
           </p>

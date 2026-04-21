@@ -251,6 +251,51 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Ecosystem Banner */}
+      <section className="py-12 bg-gradient-to-r from-[#0a0a0a] via-[#141414] to-[#0a0a0a] border-y border-[#d4af37]/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-gray-500 text-xs uppercase tracking-widest mb-6 font-medium">生态系统 — 互联互通</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {/* Dark Matter Bank */}
+            <a
+              href="https://www.darkmatterbank.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-3 bg-[#7c3aed]/10 hover:bg-[#7c3aed]/20 border border-[#7c3aed]/30 hover:border-[#7c3aed]/60 rounded-xl px-5 py-3 transition-all group w-full sm:w-auto justify-center"
+            >
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7c3aed] to-[#4c1d95] flex items-center justify-center text-sm font-bold text-white shrink-0">D</div>
+              <div className="text-left">
+                <div className="text-white text-sm font-semibold group-hover:text-[#a78bfa] transition-colors">Dark Matter Bank</div>
+                <div className="text-gray-500 text-xs">DeFi 数字银行 · AI 算力代币</div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-[#a78bfa] group-hover:translate-x-1 transition-all ml-2" />
+            </a>
+
+            {/* Divider */}
+            <div className="hidden sm:flex items-center text-gray-700">
+              <div className="w-8 h-px bg-[#d4af37]/30" />
+              <div className="w-2 h-2 rounded-full bg-[#d4af37]/50 mx-2" />
+              <div className="w-8 h-px bg-[#d4af37]/30" />
+            </div>
+
+            {/* USDD */}
+            <a
+              href="https://www.usddstablecoin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-3 bg-[#d4af37]/10 hover:bg-[#d4af37]/20 border border-[#d4af37]/30 hover:border-[#d4af37]/60 rounded-xl px-5 py-3 transition-all group w-full sm:w-auto justify-center"
+            >
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d4af37] to-[#b8960c] flex items-center justify-center text-sm font-bold text-[#0a0a0a] shrink-0">$</div>
+              <div className="text-left">
+                <div className="text-white text-sm font-semibold group-hover:text-[#d4af37] transition-colors">USDD Stablecoin</div>
+                <div className="text-gray-500 text-xs">稳定币发行平台 · 跨链结算</div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-[#d4af37] group-hover:translate-x-1 transition-all ml-2" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 lg:py-32 bg-[#141414]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
